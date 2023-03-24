@@ -1,31 +1,36 @@
+
 # 참조 코드 https://www.codingnow.co.kr/python/?bmode=view&idx=5751558&back_url=&t=board&page=1
 
 import tkinter as tk
 
 disValue = 0.0
-operator = {'+': 1, '-': 2, '/': 3, 'x': 4, 'C': 5, '=': 6, '＋':7, '+/-':8 , 'del':9, '.':10}
+operator = {'+': 1, '-': 2, '/': 3, 'x': 4, 'C': 5, '=': 6, '＋': 7, '+/-': 8, 'del': 9, '.': 10}
 stoValue = 0
 opPre = 0
-floatchange=0
+floatchange = 1
+floatcheck = 0
 
 
 def number_click(value):
-    global disValue, floatchange
+    global disValue, floatchange, floatcheck
 
-    if floatchange ==1:
-        disValue = (disValue)+(0.1*value)
-        floatchange =0
+    if floatcheck == 1:
+        floatchange = floatchange*0.1
+        disValue = disValue + (floatchange * value)
+        print(">>", floatchange, floatcheck)
     else:
         disValue = (disValue * 10) + value
     str_value.set(disValue)
+    print(value, floatchange, floatcheck, disValue)
 
 def delnum():
     global disValue
-    disValue = disValue/10
+    disValue = float(str(disValue)[:-1])
+    str_value.set(disValue)
 
 def makefloat():
-    global floatchange
-    floatchange=1
+    global floatcheck
+    floatcheck = 1
 
 def clear():
     global disValue, stoValue, opPre
@@ -34,14 +39,19 @@ def clear():
     disValue = 0
     str_value.set(str(disValue))
 
+
 def absnum():
     global disValue
-    disValue = 0-disValue
+    disValue = 0 - disValue
     str_value.set(disValue)
 
+
 def oprator_click(value):
-    global disValue, operator, stoValue, opPre
+    global disValue, operator, stoValue, opPre, floatcheck, floatchange
     op = operator[value]
+
+    floatcheck =0
+    floatchange =1
 
     if op == 5:
         clear()
@@ -49,7 +59,7 @@ def oprator_click(value):
         absnum()
     elif op == 9:
         delnum()
-    elif op ==10:
+    elif op == 10:
         makefloat()
     elif disValue == 0:
         opPre = 0
@@ -57,7 +67,6 @@ def oprator_click(value):
         opPre = op
         stoValue = disValue
         disValue = 0
-        str_value.set(str(disValue))
     elif op == 6:
         if opPre == 1:
             disValue = stoValue + disValue
@@ -71,10 +80,8 @@ def oprator_click(value):
             disValue = stoValue % disValue
 
         str_value.set(str(disValue))
-        disValue = 0
-        stoValue = 0
+        stoValue = disValue
         opPre = 0
-
 
 
 def button_click(value):
@@ -94,9 +101,9 @@ dis = tk.Entry(win, textvariable=str_value, justify='right', bg='white', fg='red
 dis.grid(column=0, row=0, columnspan=5, ipadx=80, ipady=30)
 
 calItem = [['C', '＋', '/', 'del'],
-           ['7', '8', '9', '+'],
+           ['7', '8', '9', 'x'],
            ['4', '5', '6', '-'],
-           ['1', '2', '3', 'x'],
+           ['1', '2', '3', '+'],
            ['+/-', '0', '.', '=']]
 
 for i, items in enumerate(calItem):
@@ -118,5 +125,4 @@ for i, items in enumerate(calItem):
                        command=lambda cmd=item: button_click(cmd)
                        )
         bt.grid(column=k, row=(i + 1))
-
 win.mainloop()
